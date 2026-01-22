@@ -26,7 +26,7 @@ Grading rubric
     - Key questions or issues that a forecast could address
     - Results of model/forecast explored
     - Open questions or ambiguous conclusions
- - Visuals: 10%
+ - Visuals: 10% (10 points)
     - Readable, well explained
  - Delivery: 20% (10 points each)
     - Well paced
