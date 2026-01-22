@@ -16,5 +16,20 @@ Proposed content for a presentation:
 
 Your project write-up will follow a similar structure.
 
-
+Grading rubric
+ - Content: 40% (10 points each)
+  - Background on species
+  - Clarity of information
+  - Appropriate level of detail
+  - References as applicable
+ - Scope: 30% (10 points each)
+  - Key questions or issues that a forecast could address
+  - Results of model/forecast explored
+  - Open questions or ambiguous conclusions
+ - Visuals: 10%
+  - Readable, well explained
+ - Delivery: 20% (10 points each)
+  - Well paced
+  - 10 minutes
+  
 
