@@ -110,7 +110,7 @@ threshold_prediction = function(x, threshold = 0.5){
     dplyr::mutate(dplyr::across(dplyr::everything(),
                                ~factor(.x >= threshold[1],
                                        levels = c(FALSE, TRUE, NA),
-                                       labels = c("abscence", "presence", "land"),
+                                       labels = c("absence", "presence", "land"),
                                        exclude = NULL)))
 }
 
@@ -136,7 +136,7 @@ plot_prediction = function(x,
   #' @return a ggplot2 object
   
   if (inherits(x[[1]][1], "numeric")){
-    cat("numeric\n")
+    #cat("numeric\n")
     gg = ggplot2::ggplot() +
       stars::geom_stars(data = x[1]) + 
       ggplot2::scale_fill_viridis_c(option = colors[1], 
@@ -144,14 +144,17 @@ plot_prediction = function(x,
                                     na.value = "grey50") + 
       ggplot2::facet_wrap(~month)
   } else {
+    cols = c(absence = "black", presence = "orange", land = "grey50")           
     gg = ggplot2::ggplot() +
       stars::geom_stars(data = x[1]) + 
-      ggplot2::scale_fill_viridis_d() + 
+      #ggplot2::scale_fill_viridis_d() + 
+      ggplot2::scale_fill_manual(values = cols, na.value = "grey50") + 
       ggplot2::facet_wrap(~month)
   }
   if (!is.null(coast)) {
     gg = gg + 
-      ggplot2::geom_sf(data = sf::st_geometry(coast), color = coast_color)
+      ggplot2::geom_sf(data = sf::st_geometry(coast), 
+                       color = coast_color)
   } else {
     gg = gg + 
       ggplot2::coord_sf(crs = sf::st_crs(x))
