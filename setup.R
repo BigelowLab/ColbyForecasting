@@ -2,7 +2,6 @@
 #' packages are installed locally then they are simply loaded. If they are 
 #' not installed then they are installed first and then loaded.
 
-
 # Here we list the packages by name, CRAN is easier than GITHUB
 packages = list(
   CRAN = c("remotes", "usethis", "ggplot2", "readr", "tidyr", "tidymodels",  
@@ -41,8 +40,14 @@ suppressPackageStartupMessages({
 # this is a hack because one of these packages is overriding the dplyr::slice method
 slice <- dplyr::slice
 
+# We do this with the assumption that the user has cloned to their home
+# directory.
+HOME <- list.files("~", full.names = TRUE) |>
+  getElement(1) |>
+  dirname()
 # Next we check the 'functions' directory for ".R" files and source those
-for (f in list.files("functions", pattern = glob2rx("*.R"), full.names = TRUE)) {
+for (f in list.files(file.path(HOME, "ColbyForecasting/functions"), 
+                     pattern = glob2rx("*.R"), full.names = TRUE)) {
   source(f, echo = FALSE)
 }
 
