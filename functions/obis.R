@@ -9,6 +9,7 @@ standard_obis_fields = function(){
              "eventDate",
              "eventTime",
              "individualCount",
+             "absence",
              "decimalLongitude",
              "decimalLatitude")
   return(fields)
@@ -78,9 +79,17 @@ fetch_obis = function(scientificname = "Mola mola",
   
   xx = lapply(scientificname,
               function(species){
-                x = robis::occurrence(scientificname = species,
-                                     geometry = geometry,
-                                     fields = fields)
+                x = if ("absence" %in% fields){
+                    robis::occurrence(scientificname = species,
+                                      geometry = geometry,
+                                      fields = fields,
+                                      absence = "include")
+                } else {
+                  robis::occurrence(scientificname = species,
+                                    geometry = geometry,
+                                    fields = fields)
+                } 
+                  
                 if (tidy) x = tidy_obis(x, fields = fields, crs = crs)
                 sf::write_sf(x, 
                              file.path(output_path, 
