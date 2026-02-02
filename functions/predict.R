@@ -55,6 +55,8 @@ predict_stars = function(x, newdata,
   months = stars::st_get_dimension_values(newdata, 3)
   along = list(months) |>
     rlang::set_names(d[3])
+  mask = read_mask()
+  isna = is.na(mask[['mask']]) |> as.vector()
   ss = x |>
     dplyr::filter(.data$wflow_id %in% wids) |>
     dplyr::rowwise() |>
@@ -74,6 +76,7 @@ predict_stars = function(x, newdata,
                        pred = predict(model, 
                                  thismonth |> as.data.frame(add_coordinates = FALSE),
                                  type = get_response_type(mtype))
+                       pred[isna] <- NA
                        p = thismonth[1]
                        p[[1]][] <- pred
                      } else if (mtype == "rand_forest") {
