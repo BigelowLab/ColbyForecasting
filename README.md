@@ -145,6 +145,8 @@ Day](https://en.wikipedia.org/wiki/Martin_Luther_King_Jr._Day)
 
 ## 6. Tuesday Jan 20
 
+- Lecture: Machine Learning Types
+
 - R Tutorial:
   [Predicting](https://bigelowlab.github.io/ColbyForecasting/C05_prediction.html)
 
@@ -153,11 +155,11 @@ Day](https://en.wikipedia.org/wiki/Martin_Luther_King_Jr._Day)
 
 ## 7. Thursday Jan 22
 
- - TBD
+ - R Tutorial: Getting our models working
+ 
+ - For next week: Work on your project and presentation
 
 ## 8. Monday Jan 26
-
-- Making your own [Markdown documents](https://rmarkdown.rstudio.com/)
 
 - R Tutorial: Additional time for project help
 
