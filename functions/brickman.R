@@ -334,7 +334,26 @@ extract_brickman_by_month = function(x = read_brickman(),
   z
 }
 
+read_mask = function(){
+  #' Read the mask raster for the predictor data
+  #' @return a stars object
 
+  db = brickman_database() |>
+  dplyr::filter(var == "mask")
+  read_brickman(db) |>
+    rlang::set_names("mask")
+}
+
+
+read_depth = function(){
+  #' Read the depth raster for the predictor data
+  #' @return a stars object
+  
+  db = brickman_database() |>
+    dplyr::filter(var == "depth")
+  read_brickman(db) |>
+    rlang::set_names("depth")
+}
 
 
 assemble_brickman= function(scenario = c("RCP85", "RCP45", "PRESENT"),

@@ -55,6 +55,8 @@ predict_stars = function(x, newdata,
   months = stars::st_get_dimension_values(newdata, 3)
   along = list(months) |>
     rlang::set_names(d[3])
+  mask = read_mask()
+  isna = is.na(mask[['mask']]) |> as.vector()
   ss = x |>
     dplyr::filter(.data$wflow_id %in% wids) |>
     dplyr::rowwise() |>
@@ -74,6 +76,7 @@ predict_stars = function(x, newdata,
                        pred = predict(model, 
                                  thismonth |> as.data.frame(add_coordinates = FALSE),
                                  type = get_response_type(mtype))
+                       pred[isna] <- NA
                        p = thismonth[1]
                        p[[1]][] <- pred
                      } else if (mtype == "rand_forest") {
@@ -107,21 +110,22 @@ threshold_prediction = function(x, threshold = 0.5){
     dplyr::mutate(dplyr::across(dplyr::everything(),
                                ~factor(.x >= threshold[1],
                                        levels = c(FALSE, TRUE, NA),
-                                       labels = c("abscence", "presence", "land"),
+                                       labels = c("absence", "presence", "land"),
                                        exclude = NULL)))
 }
 
 plot_prediction = function(x,
-                             colors = c("magma",
-                                        "inferno",
-                                        "plasma",
-                                        "viridis",
-                                        "cividis",
-                                        "rocket",
-                                        "mako",
-                                        "turbo")[1],
-                             coast = read_coastline(),
-                             coast_color = "white"){
+                          colors = c("magma",
+                                     "inferno",
+                                     "plasma",
+                                     "viridis",
+                                     "cividis",
+                                     "rocket",
+                                     "mako",
+                                     "turbo")[1],
+                          coast = read_coastline(),
+                          coast_color = "white",
+                          title = "Prediction Map"){
   
   #' Plot a single stars attribute (variable) over many months
   #' 
@@ -130,10 +134,11 @@ plot_prediction = function(x,
   #'  details here https://ggplot2-book.org/scales-colour.html#sec-colour-continuous.
   #'  This is ignored is the data type is not numeric.
   #' @param coast sf coast line or NULL to skip
+  #' @param coast_color str, the color to use for the coast line
+  #' @param title str the title to apply to the plot
   #' @return a ggplot2 object
   
   if (inherits(x[[1]][1], "numeric")){
-    cat("numeric\n")
     gg = ggplot2::ggplot() +
       stars::geom_stars(data = x[1]) + 
       ggplot2::scale_fill_viridis_c(option = colors[1], 
@@ -141,14 +146,21 @@ plot_prediction = function(x,
                                     na.value = "grey50") + 
       ggplot2::facet_wrap(~month)
   } else {
+    cols = c(absence = "black", presence = "orange", land = "grey50")           
     gg = ggplot2::ggplot() +
       stars::geom_stars(data = x[1]) + 
-      ggplot2::scale_fill_viridis_d() + 
+      ggplot2::scale_fill_manual(values = cols, na.value = "grey50") + 
       ggplot2::facet_wrap(~month)
   }
+  
+  gg = gg + 
+    ggplot2::labs(x = "Longitude", y = "Latitude",
+                title = title) 
+  
   if (!is.null(coast)) {
     gg = gg + 
-      ggplot2::geom_sf(data = sf::st_geometry(coast), color = coast_color)
+      ggplot2::geom_sf(data = sf::st_geometry(coast), 
+                       color = coast_color)
   } else {
     gg = gg + 
       ggplot2::coord_sf(crs = sf::st_crs(x))

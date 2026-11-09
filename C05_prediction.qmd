@@ -27,7 +27,8 @@ db = brickman_database()
 db = brickman_database()
 present_conditions = read_brickman(db |> filter(scenario == "PRESENT", 
                                                 interval == "mon"),
-                       add = c("depth", "month")) |>
+                       add = c("depth", "month"),
+                       log_me = "depth") |>
   select(all_of(cfg$keep_vars))
 ```
 
