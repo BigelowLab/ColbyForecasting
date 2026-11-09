@@ -10,7 +10,8 @@ standard_obis_fields = function(){
              "eventTime",
              "individualCount",
              "decimalLongitude",
-             "decimalLatitude")
+             "decimalLatitude",
+             "abscence")
   return(fields)
 }
 
