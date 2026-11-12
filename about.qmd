@@ -15,7 +15,7 @@ Raising questions or issues: If you have a question, start a new "issue" on [the
 
 # Website
 
-We build the website using [quarto](https://quarto.org/) which is perfect from transforming [RMarkdown](https://rmarkdown.rstudio.com/ pages into a website with minimal investment. See this [wiki page](https://github.com/BigelowLab/ColbyForecasting/wiki/Quarto) if you would like to add your work to you own fork of the class repository.
+We built the website using [quarto](https://quarto.org/) which is perfect for transforming [RMarkdown](https://rmarkdown.rstudio.com/ pages into a website with minimal investment. See this [wiki page](https://github.com/BigelowLab/ColbyForecasting/wiki/Quarto) if you would like to add your work to you own fork of the class repository.
 
 # Acknowledgments
 
@@ -23,7 +23,7 @@ Our thanks to [Omi Johnson](https://github.com/oj713) and [Kyle Oliveira](https:
 
 # Data sources
 
-Our thanks to [OBIS](https://obis.org/) for assembling, curating and distributing a remarkable database of species occurences.
+Our thanks to [OBIS](https://obis.org/) for assembling, curating and distributing a remarkable database of species occurrences.
 
 
 Our thanks to [Natural Earth](https://www.naturalearthdata.com/) for assembling, curating and distributing a remarkable database of geophysical features.

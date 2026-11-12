@@ -5,11 +5,11 @@ format: html
 
 > No choice is the wrong choice as long as you make a choice. The only wrong choice is choosing not to make one. ~ [Jake Abel](https://en.wikipedia.org/wiki/Jack_Abel)
 
-Traditional ecological surveys are systematic, for a given species survey data sets tell us where the species is found and where it is absent.  Using an observational data set (like [OBIS](https://obis.org))  we only know where the species is found, which leaves us guessing about where they might not be found. This difference is what distinguishes a *presence-abscence* data set from a *presence-only* data set, and this difference guides the modeling process.
+Traditional ecological surveys are systematic, for a given species survey data sets tell us where the species is found and where it is absent.  Using an observational data set (like [OBIS](https://obis.org)) we only know where the species is found, which leaves us guessing about where they might not be found. This difference is what distinguishes a *presence-absence* data set from a *presence-only* data set, and this difference guides the modeling process.
 
 When we model species distributions we are trying to define the environments where we should expect to find a species as well as the environments we would not expect to find a species. With OBIS data we have in hand the locations of observations, and we can extract the environmental data at those locations.  To characterize the unoccupied environments we are going to have to sample what is called "background" (aka "background points" and "pseudo-absences".)
 
-We assume that we want the number of background points to be roughoy balanced with the number of observations. What balance means is open to interpretation, but if we have 100 observations then we would like to have 50 to 200 background points in order to be balanced.  One can spend a lot of time of time finding the most appropriate balance.
+We assume that we want the number of background points to be roughly balanced with the number of observations. What balance means is open to interpretation, but if we have 100 observations then we would like to have 50 to 200 background points in order to be balanced.  One can spend a lot of time of time finding the most appropriate balance.
 
 We want these background samples to roughly match the regional preferences of the observations; that is we want to avoid having observations that are mostly over Georges Bank while our background samples are primarily around the Bay of Fundy. We want there to be some reasonable proximity between occupied and unoccupied environments. 
 
