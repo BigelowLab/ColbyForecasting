@@ -1,5 +1,5 @@
 
-brickman_variables = function(interval = c("mon", "ann", "all")[1]){
+env_variables = function(interval = c("mon", "ann", "all")[1]){
   
   #' Retrieve a listing of all Brickman variables
   #' 
@@ -35,7 +35,7 @@ brickman_variables = function(interval = c("mon", "ann", "all")[1]){
 }
 
 
-brickman_database = function(path = file.path(ROOT_DATA_PATH, "brickman")){
+env_database = function(path = file.path(ROOT_DATA_PATH, "brickman")){
   
   #' Read the Brickman database
   #' 
@@ -46,7 +46,7 @@ brickman_database = function(path = file.path(ROOT_DATA_PATH, "brickman")){
 }
 
 
-brickman_build_database = function(path = brickman_path()){
+env_build_database = function(path = env_path()){
   
   #' Build the Brickman database
   #' 
@@ -81,13 +81,13 @@ depth_first = function(x){
   x
 }
 
-read_brickman = function(db = brickman_database() |>
+read_env = function(db = env_database() |>
                            dplyr::filter(scenario == "PRESENT",
                                          year == "PRESENT",
                                          interval == "mon"), 
                          add = c("none", "depth", "month")[1], 
                          log_me = c("none", "depth", "Xbtm")[1],
-                         path = brickman_path()){
+                         path = env_path()){
 
   #' Read Brickman data given a database
   #' 
@@ -151,8 +151,8 @@ read_brickman = function(db = brickman_database() |>
   } # add month?
   
   if (("depth" %in% tolower(add)) && !("depth" %in% names(x))){
-    db = brickman_database()
-    depth = read_brickman(db |> filter(scenario == "STATIC", var == "depth"))
+    db = env_database()
+    depth = read_env(db |> filter(scenario == "STATIC", var == "depth"))
     if (length(dim(x) == 3)) {
       dd = sapply(month.abb, function(mon) {depth}, simplify = FALSE)
       depth = do.call(c, append(dd, list(along = list(month = month.abb))))
@@ -217,7 +217,7 @@ stars_as_months = function(template,
   return(r)
 }
 
-extract_brickman = function(x = read_brickman(), 
+extract_env = function(x = read_env(), 
                             y = gom_buoys(), 
                             form = "long") {
   
@@ -233,7 +233,7 @@ extract_brickman = function(x = read_brickman(),
   
   d = dim(x)
   if ((length(d) >= 3) && ("month" %in% names(y))) {
-    return(extract_brickman_by_month(x, y, form = form))
+    return(extract_env_by_month(x, y, form = form))
   }
   
   n = nrow(y)
@@ -285,7 +285,7 @@ extract_brickman = function(x = read_brickman(),
 }
 
 
-extract_brickman_by_month = function(x = read_brickman(), 
+extract_env_by_month = function(x = read_env(), 
                                      y = gom_buoys(), 
                                      form = "long") {
   
@@ -338,9 +338,9 @@ read_mask = function(){
   #' Read the mask raster for the predictor data
   #' @return a stars object
 
-  db = brickman_database() |>
+  db = env_database() |>
   dplyr::filter(var == "mask")
-  read_brickman(db) |>
+  read_env(db) |>
     rlang::set_names("mask")
 }
 
@@ -349,20 +349,20 @@ read_depth = function(){
   #' Read the depth raster for the predictor data
   #' @return a stars object
   
-  db = brickman_database() |>
+  db = env_database() |>
     dplyr::filter(var == "depth")
-  read_brickman(db) |>
+  read_env(db) |>
     rlang::set_names("depth")
 }
 
 
-assemble_brickman= function(scenario = c("RCP85", "RCP45", "PRESENT"),
+assemble_env= function(scenario = c("RCP85", "RCP45", "PRESENT"),
                            year = c("2055", "2075", "PRESENT"),
                            vars = "all", 
                            interval = c("mon", "ann"), 
                            bb = colby_bbox(),
                            band_as_time = FALSE,
-                           path = brickman_path()){
+                           path = env_path()){
   
   #' Read, warp, subset and archive all combinations of the raw Brickman data
   #' 
@@ -384,7 +384,7 @@ assemble_brickman= function(scenario = c("RCP85", "RCP45", "PRESENT"),
     interval = c("mon", "ann")[1]
     bb = colby_bbox()
     band_as_time = FALSE
-    path = brickman_path()
+    path = env_path()
   }
   
   # first load PRESENT
@@ -396,7 +396,7 @@ assemble_brickman= function(scenario = c("RCP85", "RCP45", "PRESENT"),
   # deal with bathymetry and land mask separately
   
   for (int in c("mon", "ann")){
-    vars = brickman_layers(interval = int)
+    vars = env_layers(interval = int)
     present = brickman::read_brickman(scenario = "PRESENT", 
                                       year = NA, 
                                       vars = vars |> 

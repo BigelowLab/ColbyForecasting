@@ -2,7 +2,7 @@ colby_bbox = function(x = c(xmin = -74.9,
                             xmax = -65, 
                             ymin = 38.8, 
                             ymax = 46),
-                      form = "polygon"){
+                      form = c("polygon", "bbox", "vector")[1]){
   
   #' Retrieve the region of study coordinates
   #' 

@@ -1,17 +1,17 @@
 
-read_configuration = function(scientificname = "Canis familiaris",
-                              version = "v001",
+read_configuration = function(species = "mola",
+                              version = "v.00",
                               path = data_path("models")){
   
   #' Given a version identifier, read a configuration
   #' 
-  #' @param scientificname str the scientific name
+  #' @param species str species name
   #' @param version chr the version identifier (defaults to 'v001')
   #' @param path chr you personal model data path (defaults to `data_path("models")`)
   #' @return configuration list
   
   filename = file.path(path, sprintf("%s-%s.yaml", 
-                                     gsub(" ", "_", scientificname[1], fixed = TRUE),
+                                     gsub(" ", "_", species[1], fixed = TRUE),
                                      version[1]))
   yaml::read_yaml(filename)
 }
@@ -19,7 +19,7 @@ read_configuration = function(scientificname = "Canis familiaris",
 
 
 write_configuration = function(cfg = list(version = "v000", 
-                                          species = "Canis familiaris"),
+                                          species = "dog"),
                               path = data_path("models")){
   
   #' Given a versioned configuration write a configuration

@@ -12,7 +12,7 @@ standard_obis_fields = function(){
              "absence",
              "decimalLongitude",
              "decimalLatitude",
-             "abscence")
+             "absence")
   return(fields)
 }
 
