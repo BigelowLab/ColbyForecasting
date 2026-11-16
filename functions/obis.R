@@ -1,4 +1,13 @@
-
+scientific_name = function(x = "Mola mola",
+                           sep = "_"){
+  #' Convert a scientific name (Genus species) to a progammable one
+  #' ala Genus_species
+  #' 
+  #' @param x chr, a scientifc name
+  #' @param sep chr, the separator like "_" (default) or "%20%" for URLs
+  #' @return a progammable scientific name where spaces are replaced by underscores
+  gsub(" ", sep[1], x, fixed = TRUE)
+}
 
 standard_obis_fields = function(){
   #' Retrieve a vector of standard OBIS fields
@@ -94,7 +103,7 @@ fetch_obis = function(scientificname = "Mola mola",
                 if (tidy) x = tidy_obis(x, fields = fields, crs = crs)
                 sf::write_sf(x, 
                              file.path(output_path, 
-                                       sprintf("%s.gpkg", gsub(" ", "_", species, fixed = TRUE))))
+                                       sprintf("%s.gpkg", scientific_name(species))))
               }) |>
     dplyr::bind_rows()
   return(xx)
@@ -114,13 +123,27 @@ read_obis = function(scientificname = "Mola mola",
   xx = lapply(scientificname,
               function(species){
                 filename = file.path(path, 
-                           sprintf("%s.gpkg", gsub(" ", "_", species, fixed = TRUE)))
+                           sprintf("%s.gpkg", scientific_name(species)))
                 sf::read_sf(filename)
               }) |>
     dplyr::bind_rows()
   return(xx)
 }
 
+taxon_obis = function(scientificname = "Mola mola",
+                      base_url = "https://api.obis.org/v3/taxon"){
+  #' Download taxon information given a scientific nane
+  #' 
+  #' @param scientificname chr, the scientific name
+  #' @param base_url chr, the base OBIS url
+  #' @return a list of metadata
+  
+  # https://api.obis.org/v3/taxon/Mola%20mola
+  uri = file.path(base_url, scientific_name(scientificname[1], sep = "%20"))
+  x = httr::GET(uri)
+  httr::stop_for_status(x, task = "download")
+  httr::content(x)$results
+}
 
 
 

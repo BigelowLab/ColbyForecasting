@@ -5,7 +5,7 @@
 # Here we list the packages by name, CRAN is easier than GITHUB
 packages = list(
   CRAN = c("remotes", "usethis", "ggplot2", "readr", "tidyr", "tidymodels",  
-           "imager", "stars", "rnaturalearth", "robis", "httr", "yaml", "vip",
+           "imager", "stars", "rnaturalearth", "robis", "httr", "httr2", "yaml", "vip",
            "spatialsample", "workflowsets", "effectplots", "ranger", "ggokabeito",
            "bundle", "butcher",  "tidysdm", "sf", "dplyr", "patchwork", "pdp"),
   GITHUB = list(
@@ -57,18 +57,28 @@ if (!all(c("brickman", "buoys", "coastline") %in% dir(ROOT_DATA_PATH))){
 }
 
 # We do this with the assumption that the user has cloned to their home
-# directory.
-dd = list.dirs("~", full.names = TRUE)
-ix = grepl("ColbyForecasting", dd, fixed = TRUE)
+# directory. But we provide an outlet for the developers, so that we don't need
+# develop from our home directories.
+devmode = system("hostname", intern = TRUE) == "ecocast" && 
+            system("whoami", intern = TRUE) %in% c("nrecord", "btupper")
+project_code_path = if(devmode){
+  "/mnt/ecocast/projects/ColbyForecasting"
+} else {
+  "~"
+}
+dd = list.dirs(project_code_path, full.names = TRUE, recursive = FALSE)
+ix = grepl("^ColbyForecasting$", basename(dd))
 if (any(ix)){
   ROOT_PROJECT_PATH = dd[ix][1]
 } else {
   ROOT_PROJECT_PATH = NULL
-  stop("Please be sure that project directory has a name like 'ColbyForecasting' in your home directory")
+  stop("Please be sure that project directory has the name 'ColbyForecasting' in your home directory")
 }
 
+if (devmode) (cat("devmode: ", ROOT_PROJECT_PATH, "\n"))
+
 # Next we check the 'functions' directory for ".R" files and source those
-for (f in list.files(file.path(ROOT_PROJECT_PATH, "ColbyForecasting/functions"), 
+for (f in list.files(file.path(ROOT_PROJECT_PATH, "functions"), 
                      pattern = glob2rx("*.R"), full.names = TRUE)) {
   source(f, echo = FALSE)
 }

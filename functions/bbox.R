@@ -18,3 +18,18 @@ colby_bbox = function(x = c(xmin = -74.9,
     x)
   r
 }
+
+
+bbox_to_polygon = function(x, crs = 4326){
+  #' Convert a bounding box to polygon
+  #' 
+  #' @param x named numeric vector (xmin, ymin, xmax, ymax) or bbox
+  #' @param crs the desired CRS
+  #' @return sf polygon
+  if (inherits(x, "bbox")) {
+    x = x |> sf::st_as_sfc() |> sf::st_as_sf()
+  } else if(inherits(x, "numeric")){
+    x = x |> sf::st_bbox(x, crs = crs) |> sf::st_as_sfc() |> sf::st_as_sf()
+  }
+  x
+}
