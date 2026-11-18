@@ -68,7 +68,7 @@ data_path = function(...,  root = ROOT_DATA_PATH){
 }
 
 
-brickman_path = function(root = ROOT_DATA_PATH){
+env_path = function(root = ROOT_DATA_PATH){
   
   #' Retrieve the path to the brickman data
   #' 

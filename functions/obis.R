@@ -142,7 +142,7 @@ taxon_obis = function(scientificname = "Mola mola",
   uri = file.path(base_url, scientific_name(scientificname[1], sep = "%20"))
   x = httr::GET(uri)
   httr::stop_for_status(x, task = "download")
-  httr::content(x)$results
+  httr::content(x)$results[[1]]
 }
 
 

@@ -35,7 +35,7 @@ env_variables = function(interval = c("mon", "ann", "all")[1]){
 }
 
 
-env_database = function(path = file.path(ROOT_DATA_PATH, "brickman")){
+env_database = function(path = env_path()){
   
   #' Read the Brickman database
   #' 
@@ -344,15 +344,35 @@ read_mask = function(){
     rlang::set_names("mask")
 }
 
-
-read_depth = function(){
-  #' Read the depth raster for the predictor data
+read_mask = function(){
+  
+  #' Read the mask raster for the predictor data
   #' @return a stars object
   
   db = env_database() |>
-    dplyr::filter(var == "depth")
+    filter(scenario == "STATIC", var == "mask")
   read_env(db) |>
+    rlang::set_names("mask")
+}
+
+read_depth = function(contours = FALSE,
+                      breaks = c(20, 50, 100, 200, 400, 1000)){
+  
+  #' Read the depth raster for the predictor data
+  #' @param contours logical, if TRUE then return contour lines instead of a raster
+  #' @param breaks num, if contours requested then these are the breaks
+  #' @return a stars object or contour geometry
+  
+  db = env_database() |>
+    dplyr::filter(var == "depth")
+  x = read_env(db) |>
     rlang::set_names("depth")
+  
+  if (contours) {
+    x = stars::st_contour(x, breaks = breaks, contour_lines = TRUE) |>
+      dplyr::select("depth")
+  }
+  x
 }
 
 

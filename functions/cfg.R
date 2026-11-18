@@ -49,6 +49,7 @@ cfg_template = function(name = "mola",
   list(name = name[1],
        scientificname = scientificname[1],
        version = version[1],
-       bbox = bbox)
+       bbox = bbox,
+       point_selection_fun = "basic_obs_and_background_selection")
 }
 

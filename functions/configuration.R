@@ -1,7 +1,7 @@
 
 read_configuration = function(scientificname = "Mola mola",
                               version = "v1.00",
-                              path = data_path(scientific_name(scientificname))){
+                              path = data_path(scientific_name(scientificname), version)){
   
   #' Given a version identifier, read a configuration
   #' 
@@ -10,27 +10,25 @@ read_configuration = function(scientificname = "Mola mola",
   #' @param path chr you personal model data path (defaults to `data_path(scientific_name(scientificname))`)
   #' @return configuration list
   
-  filename = file.path(path, sprintf("%s-%s.yaml", 
-                                     scientific_name(scientificname),
-                                     version[1]))
+  filename = file.path(path, "config.yaml")
   yaml::read_yaml(filename)
 }
 
 
 
-write_configuration = function(cfg = cfg_template()){
+write_configuration = function(cfg){
   
   #' Given a versioned configuration write a configuration
   #' 
   #' @param cfg list, must have element named "version"
   #' @return the input configuration list
   
-  path = data_path(scientific_name(cfg$scientificname)) |> make_path()
   
   if (!"version" %in% names(cfg)) stop("input config must have version element")
   
-  filename = file.path(path, sprintf("%s-%s.yaml", 
-                                     scientific_name(cfg$scientificname),
-                                     cfg$version[1]))
-  yaml::write_yaml(cfg, filename)
+  path = data_path(scientific_name(cfg$scientificname), cfg$version) |> make_path()
+  
+  filename = file.path(path, "config.yaml")
+  ok = yaml::write_yaml(cfg, filename)
+  cfg
 }
