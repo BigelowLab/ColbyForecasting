@@ -1,3 +1,48 @@
+extract_obsbkg_env = function(cfg,
+                              x = read_obsbkg(cfg)){
+  
+  #' Select observations and background points, by thinning and weighted sampling.
+  #' Points are save in "<scientificname>/<version>/obsbkg_<something>.gpkg" where
+  #' <something> indicates the scenario, period and interval (of which we only deal
+  #' with month)
+  #' 
+  #' @param cfg configuration list
+  #' @param x data frame of obsbkg point locations
+  #' @return the input configuration list
+
+  path = data_path("brickman")
+  opath = data_path(scientific_name(cfg$scientificname),
+                    cfg$version,
+                    "data") |>
+    make_path()
+  r = env_database(path) |>
+    dplyr::filter(interval %in% c("mon")) |>
+    dplyr::mutate(.name = paste(.data$scenario, .data$year, .data$interval, sep = "-"))
+  static = env_database(path) |>
+    dplyr::filter(scenario == "STATIC") |>
+    read_env(path)
+  geomcol = attributes(x)$sf_column
+  r = r |>
+    dplyr::group_by(scenario, year, interval) |>
+    dplyr::group_map(
+      function(grp, key){
+        ofile = file.path(opath, 
+                          sprintf("obsbkg_%s.gpkg", grp$.name[1]))
+        stat = stars::st_extract(static, x |> sf::st_coordinates())
+        s = read_env(grp, path)
+        extract_env_by_month(s, x, form = "wide") |>
+          dplyr::bind_cols(stat) |>
+          dplyr::relocate(dplyr::all_of(geomcol), 
+                          .after = dplyr::last_col()) |>
+          dplyr::select(-dplyr::any_of(".id")) |>
+          sf::write_sf(ofile)  
+      }, .keep = TRUE)
+  
+  cfg
+}
+
+
+
 select_obs_and_background = function(cfg,
                              obsbkg_function = cfg$point_selection_fun,
                              extra_name = NULL,
@@ -27,13 +72,19 @@ select_obs_and_background = function(cfg,
 
 basic_obs_and_background_selection = function(cfg,
                                               extra_name = NULL,
+                                              opath = data_path(scientific_name(cfg$scientificname), 
+                                                                cfg$version, 
+                                                                "data"),
                                               ...){
   #' A basic function for selecting observations and background by thinning and
   #' weighted sampling.  You can write your own if you have different needs or ideas.
   #' @param extra_name chr, in case you want to save this run with an extra added to the
   #'   output filename
+  #' @param opath chr, the output path
   #' @param ... unused for now
   #' @return data frame (spatial) of observations and background points
+  
+  opath = make_path(opath)
   obs = read_observations(cfg)
   mask = read_mask()
   n_per_month = dplyr::count(sf::st_drop_geometry(obs), month) |> 
@@ -54,6 +105,7 @@ basic_obs_and_background_selection = function(cfg,
   
   bias_map = rasterize_point_density(obs, mask)
  
+  
   obsbkg = sapply(month.abb,
                   function(mon){ 
                     sample_background(thinned_obs |> filter(month == mon), # <- just this month
@@ -65,12 +117,37 @@ basic_obs_and_background_selection = function(cfg,
                   }, simplify = FALSE) |>
     bind_rows() |>
     mutate(month = factor(month, levels = month.abb)) |>
-    sf::write_sf(data_path(scientific_name(cfg$scientificname), 
-                           cfg$version, 
+    sf::write_sf(file.path(opath, 
                            ifelse(is_nullna(extra_name),
                                   "obsbkg.gpkg",
                                   sprintf("obsbkg_%s.gpkg", extra_name[1]))))
   obsbkg
+}
+
+
+read_obsbkg_env = function(cfg, 
+                           name = "PRESENT-PRESENT-mon",
+                           form = c("wide", "long")[1]){
+  
+  #' Read a data frame (spatial) of observation and background env data for a given
+  #' scenario-year-interval combiantion
+  #' 
+  #' @param cfg configuration list
+  #' @param name chr, the name of the scenario-year-interval combo
+  #' @param form chr, either "wide" (default) or "long"
+  #' @return data frame (spatial)
+  
+  x = read_obsbkg(cfg, extra_name = name)
+  if (tolower(form[1]) == "long"){
+    geomcol = attributes(x)$sf_column
+    x = tidyr::pivot_longer(x,
+                            -dplyr::any_of(c("month", "class",geomcol)),
+                            names_to = "var",
+                            values_to = "value") |>
+      dplyr::relocate(dplyr::all_of(geomcol), 
+                      .after = dplyr::last_col())
+  }
+  x
 }
 
 read_obsbkg = function(cfg, extra_name = NULL){
@@ -83,6 +160,7 @@ read_obsbkg = function(cfg, extra_name = NULL){
   #' @return data frame (spatial)
   file = data_path(scientific_name(cfg$scientificname), 
                    cfg$version, 
+                   "data",
                    ifelse(is_nullna(extra_name),
                           "obsbkg.gpkg",
                           sprintf("obsbkg_%s.gpkg", extra_name[1])))

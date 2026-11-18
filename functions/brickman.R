@@ -219,7 +219,7 @@ stars_as_months = function(template,
 
 extract_env = function(x = read_env(), 
                             y = gom_buoys(), 
-                            form = "long") {
+                            form = c("wide", "long")[2]) {
   
   #' Extract point data from a Brickman stars object
   #' 
@@ -286,10 +286,10 @@ extract_env = function(x = read_env(),
 
 
 extract_env_by_month = function(x = read_env(), 
-                                     y = gom_buoys(), 
-                                     form = "long") {
+                                y = gom_buoys(), 
+                                form = "long") {
   
-  #' Extract point data from a Brickman stars object
+  #' Extract point data from a stars object
   #' 
   #' @param x stars object (with or without month dimension)
   #' @param y sf point data, if this has a "month" attribute then we extract by month
@@ -313,7 +313,7 @@ extract_env_by_month = function(x = read_env(),
     dplyr::group_by(month) |>
     dplyr::group_map(
       function(rows, key){
-        tempx = dplyr::slice(x, "month", month.abb[key$month])
+        tempx = dplyr::slice(x, "month", key$month)
         r = stars::st_extract(tempx, sf::st_coordinates(rows)) |>
           dplyr::as_tibble()
         dplyr::bind_cols(rows, r) |>
@@ -325,7 +325,7 @@ extract_env_by_month = function(x = read_env(),
 
   if (tolower(form[1]) == "long"){
     z = z |>
-      tidyr::pivot_longer(!dplyr::all_of(c("month", "class", ".id", "Month", geomcol)),
+      tidyr::pivot_longer(!dplyr::any_of(c("month", "class", ".id", "Month", geomcol)),
                           names_to = "name",
                           values_to = "value") |>
       dplyr::relocate(dplyr::all_of(geomcol), 
