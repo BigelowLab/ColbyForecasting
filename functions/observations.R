@@ -184,3 +184,23 @@ mola_filter = function(x,
                        .data$year >= minimum_year[1])
   return(x)
 }
+
+browse_observation = function(id = "00040fa1-7acd-4731-bf1e-6dc16e30c7d4",
+                       base_url = "https://api.obis.org/v3/occurrence"){
+  
+  #' Browse the record for one unique id
+  #' 
+  #' @param id chr, a unique ID or an OBIS record (one row) If multiples are 
+  #'   provided all but the first are ignored.
+  #' @param root_url chr, the root url
+  #' @return NULL invisibly
+  #' @examples
+  #' \dontrun{
+  #'   obs = read_observations(cfg)
+  #'   one = obs |> slice(202)
+  #'   browse_obis(one)
+  #' }
+  
+  if (inherits(id, "data.frame")) id = dplyr::pull(id, id)
+  httr::BROWSE(file.path(base_url, id[1]))
+}

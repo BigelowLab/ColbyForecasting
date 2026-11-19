@@ -1,0 +1,70 @@
+---
+title: "2027"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+source("setup.R")
+```
+
+# Selecting a species
+```
+cfg = cfg_template()
+```
+
+Edit the config.
+
+```
+cfg1 = write_configuration(cfg)
+
+cfg2 = read_configuration(scientificname = "Mola mola",
+                         version = "v1.00")
+                         
+identical(cfg1, cfg2)
+```
+
+Explore OBIS taxa
+
+```
+cfg = fetch_taxon(cfg)
+taxon_info = read_taxon(cfg)
+browse_taxon(cfg)
+```
+
+Fetch observations, select obsbkg, extract env data
+
+```
+cfg = cfg |> 
+  fetch_observations()
+```
+
+Explore observations
+
+```
+map_observations(cfg, interval = "month")
+plot_observations(cfg, interval = "year")
+```
+
+Prep observations and background
+
+```
+cfg |>
+  select_obs_and_background() |>
+  obsbkg_extract_env()
+```
+  
+Explore obsbkg
+
+```
+map_obsbkg(cfg, interval = "year")
+histogram_obsbkg_env(cfg)
+```
+
+
+
+
+

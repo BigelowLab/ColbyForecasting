@@ -21,18 +21,6 @@ fetch_observations = function(cfg, verbose = TRUE){
   cfg
 }
 
-fetch_taxon = function(cfg){
-  #' Fetch taxon metadata
-  #' 
-  #' @param cfg configuration list
-  #' @return the input
-  x = taxon_obis(cfg$scientificname) |>
-    yaml::write_yaml(data_path("obis", 
-                               sprintf("%s-taxon.yaml",
-                                       scientific_name(cfg$scientificname))))
-  cfg
-}
-
 cfg_template = function(name = "mola",
                         scientificname = "Mola mola",
                         version = "v1.00",

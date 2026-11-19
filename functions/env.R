@@ -1,4 +1,4 @@
-obsenv_extract_env = function(cfg,
+obsbkg_extract_env = function(cfg,
                        x = read_obsbkg(cfg),
                        path = data_path("brickman"),
                        opath = data_path("data")){
@@ -23,8 +23,4 @@ obsenv_extract_env = function(cfg,
           dplyr::relocate(dplyr::all_of(geomcol), 
                           .after = dplyr::last_col())
       }, .keep = TRUE)
-  
-  
-  
-  
 }

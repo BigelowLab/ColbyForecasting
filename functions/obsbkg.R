@@ -67,6 +67,7 @@ select_obs_and_background = function(cfg,
 
   gg = map_obsbkg(cfg, x = obsbkg, extra_name = NULL, save_file = TRUE)
   
+  
   cfg  
 }
 
@@ -204,3 +205,48 @@ map_obsbkg = function(cfg,
   }
   gg
 }
+
+histogram_obsbkg_env = function(cfg,
+                            x = read_obsbkg_env(cfg, form = "long"), 
+                            save_file = TRUE,
+                            extra_name = NULL){
+  
+  #' Plot obsbkg histograms of env data parsed by obs/bkg
+  #' 
+  #' @param cfg configuration list
+  #' @param x data frame of observations
+  #' @param save_file logical, if TRUE then save the file disk in 
+  #'   <species>/<version>/histogram_obsbkg_<interval>.png
+  #' @param extra_name NA (or NULL) of character, something to add to the filename, by default
+  #'   nothing is added, but use this to add, say, "thinned"
+  #' @return, ggplot2 object
+  
+  
+  # we don't need the spatial info
+  x = sf::st_drop_geometry(x) |>
+    dplyr::filter(.data$var != "mask")
+ 
+  gg = ggplot2::ggplot(data = x,
+                       mapping = ggplot2::aes(x = value))  + 
+    ggplot2::geom_histogram(mapping = ggplot2::aes(fill = class,
+                                                   color = class),
+                            alpha = 0.5, 
+                            position = "identity") +
+    ggplot2::labs(title = sprintf("%s %s", cfg$scientificname, cfg$version)) +
+    ggplot2::facet_wrap(~var,
+                        scales = "free")
+    
+ 
+
+  
+  if (save_file){
+    path =  data_path(scientific_name(cfg$scientificname), cfg$version, "images") |>
+      make_path()
+    ofile = file.path(path, ifelse(is_nullna(extra_name[1]), 
+                                   "obsbkg_env_histogram.png",
+                                   sprintf("obsbkg_env_histogram_%s.png", extra_name[1])))
+    ggplot2::ggsave(ofile, plot = gg, width = 8, height = 6)
+  }
+  gg
+}
+

@@ -130,39 +130,3 @@ read_obis = function(scientificname = "Mola mola",
   return(xx)
 }
 
-taxon_obis = function(scientificname = "Mola mola",
-                      base_url = "https://api.obis.org/v3/taxon"){
-  #' Download taxon information given a scientific nane
-  #' 
-  #' @param scientificname chr, the scientific name
-  #' @param base_url chr, the base OBIS url
-  #' @return a list of metadata
-  
-  # https://api.obis.org/v3/taxon/Mola%20mola
-  uri = file.path(base_url, scientific_name(scientificname[1], sep = "%20"))
-  x = httr::GET(uri)
-  httr::stop_for_status(x, task = "download")
-  httr::content(x)$results[[1]]
-}
-
-
-
-browse_obis = function(id = "00040fa1-7acd-4731-bf1e-6dc16e30c7d4",
-                       base_url = "https://api.obis.org/v3/occurrence"){
-  
-  #' Browse the record for one unique id
-  #' 
-  #' @param id chr, a unique ID or an OBIS record (one row) If multiples are 
-  #'   provided all but the first are ignored.
-  #' @param root_url chr, the root url
-  #' @return NULL invisibly
-  #' @examples
-  #' \dontrun{
-  #'   obs = read_obis(scientificname = "Mola mola")
-  #'   one = obis |> slice(202)
-  #'   browse_obis(one)
-  #' }
-  
-  if (inherits(id, "data.frame")) id = dplyr::pull(id, id)
-  httr::BROWSE(file.path(base_url, id[1]))
-}
